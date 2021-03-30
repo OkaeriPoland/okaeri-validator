@@ -124,7 +124,7 @@ public class OkaeriValidator implements Validator {
 
         // unexpected case
         if (canBeNull == null) {
-            throw new ValidatorException("unexpected case for @NotNull @Nullable and DefaultNullPolicy occured");
+            throw new ValidatorException("unexpected case for @NotNull @Nullable and NullPolicy occured");
         }
 
         // can be null or is not null, pass

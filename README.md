@@ -81,7 +81,7 @@ public final class TestValidator {
 
     public static void main(String[] args) {
         // alternatively skip second argument to allow all fields Nullable by default
-        OkaeriValidator validator = OkaeriValidator.of(Bean.class, DefaultNullPolicy.NOT_NULL);
+        OkaeriValidator validator = OkaeriValidator.of(Bean.class, NullPolicy.NOT_NULL);
         Set<ConstraintViolation> violations = validator.validate(new Bean());
         violations.forEach(violation -> System.out.println(violation.getField() + ": " + violation.getMessage()));
     }
