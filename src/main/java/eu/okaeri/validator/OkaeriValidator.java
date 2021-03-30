@@ -335,7 +335,7 @@ public class OkaeriValidator implements Validator {
         }
 
         if ((fieldType == byte.class) || (fieldType == short.class) || (fieldType == int.class) || (fieldType == long.class) || (fieldType == double.class) || (fieldType == float.class)) {
-            return BigDecimal.valueOf(Long.parseLong(fieldValue.toString()));
+            return new BigDecimal(String.valueOf(fieldValue));
         }
 
         if (Number.class.isAssignableFrom(fieldType)) {
