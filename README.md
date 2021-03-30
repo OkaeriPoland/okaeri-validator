@@ -90,6 +90,7 @@ public final class TestValidator {
 
 ## Annotations
 
+### Comparison
 | Jakarta EE | Okaeri Validator |
 |-|-|
 | @AssertFalse | @Pattern(value = "false", useToString=true) |
@@ -113,3 +114,8 @@ public final class TestValidator {
 | @Positive | @Min(1) |
 | @PositiveOrZero | @Min(0) |
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
+
+### Additional
+| Annotation | Description |
+|-|-|
+| @Nullable | Allows value to be null when DefaultNullPolicy.NOT_NULL is used |
