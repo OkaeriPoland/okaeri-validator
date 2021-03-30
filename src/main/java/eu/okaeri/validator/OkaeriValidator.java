@@ -282,7 +282,7 @@ public class OkaeriValidator implements Validator {
         if (CharSequence.class.isAssignableFrom(fieldType)) {
             objectValue = (CharSequence) fieldValue;
         } else if (patternAnnotation.useToString()) {
-            objectValue = fieldValue.toString();
+            objectValue = String.valueOf(fieldValue);
         }
 
         if (objectValue == null) {
