@@ -108,14 +108,14 @@ public final class TestValidator {
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
 | @NotNull | @NotNull |
-| @Null | @Pattern(value = "null", useToString=true)* |
+| @Null | None |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
 | @Positive | @Min(1) |
 | @PositiveOrZero | @Min(0) |
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
 
-*using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "null" but object value in fact is not `null`.
+*using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "false" but object value in fact is not boolean `false`.
 
 ### Additional
 | Annotation | Description |
