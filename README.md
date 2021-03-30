@@ -103,7 +103,7 @@ public final class TestValidator {
 | @FutureOrPresent | None |
 | @Min(x) | @Min(x) |
 | @Min(x) | @Max(x) |
-| @Negative | @Max(-1) |
+| @Negative | @Max(-1)** |
 | @NegativeOrZero | @Max(0) |
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
@@ -111,11 +111,12 @@ public final class TestValidator {
 | @Null | None |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
-| @Positive | @Min(1) |
+| @Positive | @Min(1)** |
 | @PositiveOrZero | @Min(0) |
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
 
 *using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "false" but object value in fact is not boolean `false`.
+**currently support for checking if floating point value is positive/negative is limited to values that include zero. `@DecimalMin` and `@DecimalMax` may be used as hacky fallback (`0.000..001`).
 
 ### Additional
 | Annotation | Description |
