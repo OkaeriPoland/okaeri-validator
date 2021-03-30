@@ -93,11 +93,11 @@ public final class TestValidator {
 ### Comparison
 | Jakarta EE | Okaeri Validator |
 |-|-|
-| @AssertFalse | @Pattern(value = "false", useToString=true) |
-| @AssertTrue | @Pattern(value = "true", useToString=true) |
+| @AssertFalse | @Pattern(value = "false", useToString=true)* |
+| @AssertTrue | @Pattern(value = "true", useToString=true)* |
 | @DecimalMax | None |
 | @DecimalMin | None |
-| @Digits | @Pattern(value = "custom regex", useToString=true) |
+| @Digits | @Pattern(value = "custom regex", useToString=true)* |
 | @Email | @Pattern("custom regex") |
 | @Future | None |
 | @FutureOrPresent | None |
@@ -108,12 +108,14 @@ public final class TestValidator {
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
 | @NotNull | @NotNull |
-| @Null | @Pattern(value = "null", useToString=true) |
+| @Null | @Pattern(value = "null", useToString=true)* |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
 | @Positive | @Min(1) |
 | @PositiveOrZero | @Min(0) |
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
+
+*using useToString=true may yield unexpected results, eg. CustomObject#toString() may return "null" but object value when object in fact is not null.
 
 ### Additional
 | Annotation | Description |
