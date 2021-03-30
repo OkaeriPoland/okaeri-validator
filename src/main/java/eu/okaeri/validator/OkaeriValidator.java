@@ -3,7 +3,7 @@ package eu.okaeri.validator;
 
 import eu.okaeri.validator.annotation.*;
 import eu.okaeri.validator.exception.ValidatorException;
-import eu.okaeri.validator.policy.DefaultNullPolicy;
+import eu.okaeri.validator.policy.NullPolicy;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -16,7 +16,7 @@ public class OkaeriValidator implements Validator {
 
     private Class<?> clazz;
     private List<Field> fields;
-    private DefaultNullPolicy nullPolicy;
+    private NullPolicy nullPolicy;
 
     private Optional<Field> fieldByName(String name) {
         return this.fields.stream()
@@ -48,10 +48,10 @@ public class OkaeriValidator implements Validator {
     }
 
     public static OkaeriValidator of(Class<?> clazz) {
-        return of(clazz, DefaultNullPolicy.NULLABLE);
+        return of(clazz, NullPolicy.NULLABLE);
     }
 
-    public static OkaeriValidator of(Class<?> clazz, DefaultNullPolicy nullPolicy) {
+    public static OkaeriValidator of(Class<?> clazz, NullPolicy nullPolicy) {
         OkaeriValidator validator = new OkaeriValidator();
         validator.clazz = clazz;
         validator.fields = Arrays.asList(clazz.getDeclaredFields());
@@ -88,7 +88,9 @@ public class OkaeriValidator implements Validator {
         violations.addAll(this.validateNotNull(field, fieldValue, fieldType));
         violations.addAll(this.validateSize(field, fieldValue, fieldType));
         violations.addAll(this.validateMin(field, fieldValue, fieldType));
+        violations.addAll(this.validateDecimalMin(field, fieldValue, fieldType));
         violations.addAll(this.validateMax(field, fieldValue, fieldType));
+        violations.addAll(this.validateDecimalMax(field, fieldValue, fieldType));
         violations.addAll(this.validatePattern(field, fieldValue, fieldType));
         violations.addAll(this.validateNotBlank(field, fieldValue, fieldType));
 
@@ -104,15 +106,14 @@ public class OkaeriValidator implements Validator {
 
         // no NotNull annotation
         if (notNullAnnotation == null) {
-            if (this.nullPolicy == DefaultNullPolicy.NOT_NULL) {
+            if (this.nullPolicy == NullPolicy.NOT_NULL) {
                 //noinspection RedundantIfStatement
                 if (nullableAnnotation == null) {
                     canBeNull = false;
                 } else {
                     canBeNull = true;
                 }
-            }
-            else if (this.nullPolicy == DefaultNullPolicy.NULLABLE) {
+            } else if (this.nullPolicy == NullPolicy.NULLABLE) {
                 canBeNull = true;
             }
         }
@@ -198,17 +199,7 @@ public class OkaeriValidator implements Validator {
             return Collections.emptySet();
         }
 
-        BigDecimal objectValue = null;
-        if (BigDecimal.class.isAssignableFrom(fieldType)) {
-            objectValue = (BigDecimal) fieldValue;
-        } else if (BigInteger.class.isAssignableFrom(fieldType)) {
-            objectValue = new BigDecimal(((BigInteger) fieldValue));
-        } else if (Byte.class.isAssignableFrom(fieldType) || Short.class.isAssignableFrom(fieldType) || Integer.class.isAssignableFrom(fieldType) || long.class.isAssignableFrom(fieldType)) {
-            objectValue = BigDecimal.valueOf(((Number) fieldValue).longValue());
-        } else if ((fieldType == byte.class) || (fieldType == short.class) || (fieldType == int.class) || (fieldType == long.class)) {
-            objectValue = BigDecimal.valueOf(Long.parseLong(fieldValue.toString()));
-        }
-
+        BigDecimal objectValue = this.toBigDecimal(fieldValue, fieldType);
         if (objectValue == null) {
             throw new ValidatorException("@Min is not applicable for " + fieldType + " [" + field.getName() + "]");
         }
@@ -238,17 +229,7 @@ public class OkaeriValidator implements Validator {
             return Collections.emptySet();
         }
 
-        BigDecimal objectValue = null;
-        if (BigDecimal.class.isAssignableFrom(fieldType)) {
-            objectValue = (BigDecimal) fieldValue;
-        } else if (BigInteger.class.isAssignableFrom(fieldType)) {
-            objectValue = new BigDecimal(((BigInteger) fieldValue));
-        } else if (Byte.class.isAssignableFrom(fieldType) || Short.class.isAssignableFrom(fieldType) || Integer.class.isAssignableFrom(fieldType) || long.class.isAssignableFrom(fieldType)) {
-            objectValue = BigDecimal.valueOf(((Number) fieldValue).longValue());
-        } else if ((fieldType == byte.class) || (fieldType == short.class) || (fieldType == int.class) || (fieldType == long.class)) {
-            objectValue = BigDecimal.valueOf(Long.parseLong(fieldValue.toString()));
-        }
-
+        BigDecimal objectValue = this.toBigDecimal(fieldValue, fieldType);
         if (objectValue == null) {
             throw new ValidatorException("@Max is not applicable for " + fieldType + " [" + field.getName() + "]");
         }
@@ -265,6 +246,103 @@ public class OkaeriValidator implements Validator {
         violations.add(new ConstraintViolation(field.getName(), message));
 
         return violations;
+    }
+
+    protected Set<ConstraintViolation> validateDecimalMin(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        DecimalMin minAnnotation = field.getAnnotation(DecimalMin.class);
+        if (minAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue = this.toBigDecimal(fieldValue, fieldType);
+        if (objectValue == null) {
+            throw new ValidatorException("@DecimalMin is not applicable for " + fieldType + " [" + field.getName() + "]");
+        }
+
+        BigDecimal value;
+        try {
+            value = new BigDecimal(minAnnotation.value());
+        } catch (Exception exception) {
+            throw new ValidatorException("@DecimalMin value '" + minAnnotation.value() + "' is invalid [" + field.getName() + "]", exception);
+        }
+
+        if (objectValue.compareTo(value) >= 0) {
+            return Collections.emptySet();
+        }
+
+        String message = minAnnotation.message()
+                .replace("{value}", String.valueOf(value));
+
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
+
+        return violations;
+    }
+
+    protected Set<ConstraintViolation> validateDecimalMax(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        DecimalMax maxAnnotation = field.getAnnotation(DecimalMax.class);
+        if (maxAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue = this.toBigDecimal(fieldValue, fieldType);
+        if (objectValue == null) {
+            throw new ValidatorException("@DecimalMax is not applicable for " + fieldType + " [" + field.getName() + "]");
+        }
+
+        BigDecimal value;
+        try {
+            value = new BigDecimal(maxAnnotation.value());
+        } catch (Exception exception) {
+            throw new ValidatorException("@DecimalMax value '" + maxAnnotation.value() + "' is invalid [" + field.getName() + "]", exception);
+        }
+
+        if (objectValue.compareTo(value) <= 0) {
+            return Collections.emptySet();
+        }
+
+        String message = maxAnnotation.message()
+                .replace("{value}", String.valueOf(value));
+
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
+
+        return violations;
+    }
+
+    private BigDecimal toBigDecimal(Object fieldValue, Class<?> fieldType) {
+
+        if (CharSequence.class.isAssignableFrom(fieldType)) {
+            return new BigDecimal(String.valueOf(fieldValue));
+        }
+
+        if (BigDecimal.class.isAssignableFrom(fieldType)) {
+            return (BigDecimal) fieldValue;
+        }
+
+        if (BigInteger.class.isAssignableFrom(fieldType)) {
+            return new BigDecimal(((BigInteger) fieldValue));
+        }
+
+        if ((fieldType == byte.class) || (fieldType == short.class) || (fieldType == int.class) || (fieldType == long.class) || (fieldType == double.class) || (fieldType == float.class)) {
+            return BigDecimal.valueOf(Long.parseLong(fieldValue.toString()));
+        }
+
+        if (Number.class.isAssignableFrom(fieldType)) {
+            return BigDecimal.valueOf(((Number) fieldValue).longValue());
+        }
+
+        return null;
     }
 
     protected Set<ConstraintViolation> validatePattern(Field field, Object fieldValue, Class<?> fieldType) {

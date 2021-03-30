@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must be a number whose value must be higher or equal to the specified minimum.
+ * The annotated element must be a number whose value must be lower or equal to the specified maximum.
  *
  * Supported types:
  * - BigDecimal
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Min {
-    long value();
-    String message() default "value must be equal to or greater than {value}";
+public @interface DecimalMax {
+    String value();
+    String message() default "value must be equal to or smaller than {value}";
 }
