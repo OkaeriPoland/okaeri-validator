@@ -7,8 +7,7 @@
 [![Discord](https://img.shields.io/discord/589089838200913930)](https://discord.gg/hASN5eX)
 
 Simple Java Bean field validator inspired by Java EE validation practices. 
-
-The library is partially complaint but not expected to be. The main goal is relatively small source code size as opposed 
+The library is partially complaint but not expected to be. The main goal is relatively small source code size (~15kB) as opposed 
 to using hibernate-validator with Jakarta EE which ends at 2MB of additional jar size.
 
 ## Installation
@@ -93,11 +92,11 @@ public final class TestValidator {
 
 | Jakarta EE | Okaeri Validator |
 |-|-|
-| @AssertFalse | None |
-| @AssertTrue | None |
+| @AssertFalse | @Pattern("false", useToString=true) |
+| @AssertTrue | @Pattern("true", useToString=true) |
 | @DecimalMax | None |
 | @DecimalMin | None |
-| @Digits | None |
+| @Digits | @Pattern(custom regex, useToString=true) |
 | @Email | @Pattern(custom regex) |
 | @Future | None |
 | @FutureOrPresent | None |
@@ -108,7 +107,7 @@ public final class TestValidator {
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
 | @NotNull | @NotNull |
-| @Null | None |
+| @Null | @Pattern("null", useToString=true) |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
 | @Positive | @Min(1) |
