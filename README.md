@@ -116,6 +116,7 @@ public final class TestValidator {
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
 
 *using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "false" but object value in fact is not boolean `false`.
+
 **currently support for checking if floating point value is positive/negative is limited to values that include zero. `@DecimalMin` and `@DecimalMax` may be used as hacky fallback (`0.000..001`).
 
 ### Additional
