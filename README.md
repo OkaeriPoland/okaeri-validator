@@ -24,7 +24,7 @@ Add dependency to the `dependencies` section:
 <dependency>
   <groupId>eu.okaeri</groupId>
   <artifactId>okaeri-validator</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 ### Gradle
@@ -34,7 +34,7 @@ maven { url "https://storehouse.okaeri.eu/repository/maven-public/" }
 ```
 Add dependency to the `maven` section:
 ```groovy
-implementation 'eu.okaeri:okaeri-validator:1.1.0'
+implementation 'eu.okaeri:okaeri-validator:1.2.0'
 ```
 
 ## Example Bean
@@ -95,8 +95,8 @@ public final class TestValidator {
 |-|-|
 | @AssertFalse | @Pattern(value = "false", useToString=true)* |
 | @AssertTrue | @Pattern(value = "true", useToString=true)* |
-| @DecimalMax | None |
-| @DecimalMin | None |
+| @DecimalMax | @DecimalMax |
+| @DecimalMin | @DecimalMin |
 | @Digits | @Pattern(value = "custom regex", useToString=true)* |
 | @Email | @Pattern("custom regex") |
 | @Future | None |
@@ -120,4 +120,4 @@ public final class TestValidator {
 ### Additional
 | Annotation | Description |
 |-|-|
-| @Nullable | Allows value to be null when DefaultNullPolicy.NOT_NULL is used |
+| @Nullable | Allows value to be null when `NullPolicy.NOT_NULL` is used |

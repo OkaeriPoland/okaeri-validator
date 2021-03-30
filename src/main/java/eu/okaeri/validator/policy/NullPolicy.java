@@ -1,6 +1,6 @@
 package eu.okaeri.validator.policy;
 
-public enum DefaultNullPolicy {
+public enum NullPolicy {
     NULLABLE,
     NOT_NULL
 }

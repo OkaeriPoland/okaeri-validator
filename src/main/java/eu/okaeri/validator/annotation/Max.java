@@ -11,12 +11,13 @@ import java.lang.annotation.Target;
  * Supported types:
  * - BigDecimal
  * - BigInteger
- * - Byte (+ byte)
- * - Short (+ short)
- * - Integer (+ int)
- * - Long (+ long)
+ * - CharSequence
+ * - primitives: byte, short, int, long, double*, float*
+ * - Number: (eg. Byte, Short, Integer, Long, Double*, Float*)
  *
- *  `null` elements are considered valid.
+ * *Floating point values may be prone to the rounding errors.
+ *
+ * `null` elements are considered valid.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

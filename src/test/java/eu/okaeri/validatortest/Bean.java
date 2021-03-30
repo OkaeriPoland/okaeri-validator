@@ -36,4 +36,7 @@ public class Bean {
 
     @NotBlank
     private String notReallyBlank = "xdd";
+
+    @DecimalMin("5.99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999")
+    private int six = 6;
 }

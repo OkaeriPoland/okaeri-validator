@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Min {
-    long value();
+public @interface DecimalMin {
+    String value();
     String message() default "value must be equal to or greater than {value}";
 }
