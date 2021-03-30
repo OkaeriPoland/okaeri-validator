@@ -92,12 +92,12 @@ public final class TestValidator {
 
 | Jakarta EE | Okaeri Validator |
 |-|-|
-| @AssertFalse | @Pattern("false", useToString=true) |
-| @AssertTrue | @Pattern("true", useToString=true) |
+| @AssertFalse | @Pattern(value = "false", useToString=true) |
+| @AssertTrue | @Pattern(value = "true", useToString=true) |
 | @DecimalMax | None |
 | @DecimalMin | None |
-| @Digits | @Pattern(custom regex, useToString=true) |
-| @Email | @Pattern(custom regex) |
+| @Digits | @Pattern(value = "custom regex", useToString=true) |
+| @Email | @Pattern("custom regex") |
 | @Future | None |
 | @FutureOrPresent | None |
 | @Min(x) | @Min(x) |
@@ -107,9 +107,9 @@ public final class TestValidator {
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
 | @NotNull | @NotNull |
-| @Null | @Pattern("null", useToString=true) |
+| @Null | @Pattern(value = "null", useToString=true) |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
 | @Positive | @Min(1) |
 | @PositiveOrZero | @Min(0) |
-| @Size(min, max) | @Size(min, max) |
+| @Size(min=x, max=y) | @Size(min=x, max=y) |
