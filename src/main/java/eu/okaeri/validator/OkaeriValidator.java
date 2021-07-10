@@ -4,6 +4,7 @@ package eu.okaeri.validator;
 import eu.okaeri.validator.annotation.*;
 import eu.okaeri.validator.exception.ValidatorException;
 import eu.okaeri.validator.policy.NullPolicy;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -18,13 +19,13 @@ public class OkaeriValidator implements Validator {
     private List<Field> fields;
     private NullPolicy nullPolicy;
 
-    private Optional<Field> fieldByName(String name) {
+    private Optional<Field> fieldByName(@NonNull String name) {
         return this.fields.stream()
                 .filter(field -> name.equals(field.getName()))
                 .findAny();
     }
 
-    private Object fieldValueOrNull(Object object, String name) {
+    private Object fieldValueOrNull(@NonNull Object object, @NonNull String name) {
         return this.fieldByName(name)
                 .map(field -> {
                     try {
@@ -40,18 +41,18 @@ public class OkaeriValidator implements Validator {
                 .orElse(null);
     }
 
-    private void validateIfApplicable(Object bean) {
+    private void validateIfApplicable(@NonNull Object bean) {
         if (this.clazz.isAssignableFrom(bean.getClass())) {
             return;
         }
         throw new ValidatorException("cannot validate " + bean.getClass() + " with the validator created for " + this.clazz);
     }
 
-    public static OkaeriValidator of(Class<?> clazz) {
+    public static OkaeriValidator of(@NonNull Class<?> clazz) {
         return of(clazz, NullPolicy.NULLABLE);
     }
 
-    public static OkaeriValidator of(Class<?> clazz, NullPolicy nullPolicy) {
+    public static OkaeriValidator of(@NonNull Class<?> clazz, @NonNull NullPolicy nullPolicy) {
         OkaeriValidator validator = new OkaeriValidator();
         validator.clazz = clazz;
         validator.fields = Arrays.asList(clazz.getDeclaredFields());
@@ -60,7 +61,7 @@ public class OkaeriValidator implements Validator {
     }
 
     @Override
-    public Set<ConstraintViolation> validate(Object object) {
+    public Set<ConstraintViolation> validate(@NonNull Object object) {
         this.validateIfApplicable(object);
         return this.fields.stream()
                 .flatMap(field -> this.validateProperty(object, field.getName()).stream())
@@ -68,13 +69,13 @@ public class OkaeriValidator implements Validator {
     }
 
     @Override
-    public Set<ConstraintViolation> validateProperty(Object object, String fieldName) {
+    public Set<ConstraintViolation> validateProperty(@NonNull Object object, @NonNull String fieldName) {
         this.validateIfApplicable(object);
         return this.validateValue(fieldName, this.fieldValueOrNull(object, fieldName));
     }
 
     @Override
-    public Set<ConstraintViolation> validateValue(String fieldName, Object fieldValue) {
+    public Set<ConstraintViolation> validateValue(@NonNull String fieldName, Object fieldValue) {
 
         Optional<Field> fieldOptional = this.fieldByName(fieldName);
         if (!fieldOptional.isPresent()) {
