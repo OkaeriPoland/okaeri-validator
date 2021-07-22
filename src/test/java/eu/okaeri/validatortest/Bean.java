@@ -7,6 +7,10 @@ import java.util.List;
 
 public class Bean {
 
+    @Positive
+    @PositiveOrZero
+    @Negative
+    @NegativeOrZero
     @Min(1)
     private int zero = 0;
 

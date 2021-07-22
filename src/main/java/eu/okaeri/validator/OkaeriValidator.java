@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,6 +95,10 @@ public class OkaeriValidator implements Validator {
         violations.addAll(this.validateDecimalMax(field, fieldValue, fieldType));
         violations.addAll(this.validatePattern(field, fieldValue, fieldType));
         violations.addAll(this.validateNotBlank(field, fieldValue, fieldType));
+        violations.addAll(this.validatePositive(field, fieldValue, fieldType));
+        violations.addAll(this.validatePositiveOrZero(field, fieldValue, fieldType));
+        violations.addAll(this.validateNegative(field, fieldValue, fieldType));
+        violations.addAll(this.validateNegativeOrZero(field, fieldValue, fieldType));
 
         return violations;
     }
@@ -410,6 +415,130 @@ public class OkaeriValidator implements Validator {
 
         HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
         violations.add(new ConstraintViolation(field.getName(), notBlankAnnotation.message()));
+        return violations;
+    }
+
+    protected Set<ConstraintViolation> validatePositive(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        Positive positiveAnnotation = field.getAnnotation(Positive.class);
+        if (positiveAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue;
+        if (fieldValue instanceof Duration) {
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+        } else {
+            objectValue = this.toBigDecimal(fieldValue, fieldType);
+            if (objectValue == null) {
+                throw new ValidatorException("@Positive is not applicable for " + fieldType + " [" + field.getName() + "]");
+            }
+        }
+
+        if (objectValue.compareTo(BigDecimal.ZERO) > 0) {
+            return Collections.emptySet();
+        }
+
+        String message = positiveAnnotation.message();
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
+        return violations;
+    }
+
+    protected Set<ConstraintViolation> validatePositiveOrZero(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        PositiveOrZero positiveOrZeroAnnotation = field.getAnnotation(PositiveOrZero.class);
+        if (positiveOrZeroAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue;
+        if (fieldValue instanceof Duration) {
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+        } else {
+            objectValue = this.toBigDecimal(fieldValue, fieldType);
+            if (objectValue == null) {
+                throw new ValidatorException("@PositiveOrZero is not applicable for " + fieldType + " [" + field.getName() + "]");
+            }
+        }
+
+        if (objectValue.compareTo(BigDecimal.ZERO) >= 0) {
+            return Collections.emptySet();
+        }
+
+        String message = positiveOrZeroAnnotation.message();
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
+        return violations;
+    }
+
+    protected Set<ConstraintViolation> validateNegative(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        Negative negativeAnnotation = field.getAnnotation(Negative.class);
+        if (negativeAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue;
+        if (fieldValue instanceof Duration) {
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+        } else {
+            objectValue = this.toBigDecimal(fieldValue, fieldType);
+            if (objectValue == null) {
+                throw new ValidatorException("@Negative is not applicable for " + fieldType + " [" + field.getName() + "]");
+            }
+        }
+
+        if (objectValue.compareTo(BigDecimal.ZERO) < 0) {
+            return Collections.emptySet();
+        }
+
+        String message = negativeAnnotation.message();
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
+        return violations;
+    }
+
+    protected Set<ConstraintViolation> validateNegativeOrZero(Field field, Object fieldValue, Class<?> fieldType) {
+
+        if (fieldValue == null) {
+            return Collections.emptySet();
+        }
+
+        NegativeOrZero negativeOrZeroAnnotation = field.getAnnotation(NegativeOrZero.class);
+        if (negativeOrZeroAnnotation == null) {
+            return Collections.emptySet();
+        }
+
+        BigDecimal objectValue;
+        if (fieldValue instanceof Duration) {
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+        } else {
+            objectValue = this.toBigDecimal(fieldValue, fieldType);
+            if (objectValue == null) {
+                throw new ValidatorException("@NegativeOrZero is not applicable for " + fieldType + " [" + field.getName() + "]");
+            }
+        }
+
+        if (objectValue.compareTo(BigDecimal.ZERO) <= 0) {
+            return Collections.emptySet();
+        }
+
+        String message = negativeOrZeroAnnotation.message();
+        HashSet<ConstraintViolation> violations = new LinkedHashSet<>();
+        violations.add(new ConstraintViolation(field.getName(), message));
         return violations;
     }
 

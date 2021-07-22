@@ -7,7 +7,7 @@
 [![Discord](https://img.shields.io/discord/589089838200913930)](https://discord.gg/hASN5eX)
 
 Simple Java Bean field validator inspired by Java EE validation practices. 
-The library is partially complaint but not expected to be. The main goal is relatively small source code size (~15kB) as opposed 
+The library is partially complaint but not expected to be. The main goal is relatively small source code size (~20kB) as opposed 
 to using hibernate-validator with Jakarta EE which ends at 2MB of additional jar size.
 
 ## Installation
@@ -24,7 +24,7 @@ Add dependency to the `dependencies` section:
 <dependency>
   <groupId>eu.okaeri</groupId>
   <artifactId>okaeri-validator</artifactId>
-  <version>1.2.3</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 ### Gradle
@@ -34,7 +34,7 @@ maven { url "https://storehouse.okaeri.eu/repository/maven-public/" }
 ```
 Add dependency to the `maven` section:
 ```groovy
-implementation 'eu.okaeri:okaeri-validator:1.2.3'
+implementation 'eu.okaeri:okaeri-validator:1.3.0'
 ```
 
 ## Example Bean
@@ -103,21 +103,19 @@ public final class TestValidator {
 | @FutureOrPresent | None |
 | @Min(x) | @Min(x) |
 | @Min(x) | @Max(x) |
-| @Negative | @Max(-1)** |
-| @NegativeOrZero | @Max(0) |
+| @Negative | @Negative |
+| @NegativeOrZero | @NegativeOrZero |
 | @NotBlank | @NotBlank |
 | @NotEmpty | @Size(min = 1) |
 | @NotNull | @NotNull |
 | @Null | None |
 | @Past | None |
 | @Pattern(regexp = value) | @Pattern(value) |
-| @Positive | @Min(1)** |
-| @PositiveOrZero | @Min(0) |
+| @Positive | @Positive |
+| @PositiveOrZero | @PositiveOrZero |
 | @Size(min=x, max=y) | @Size(min=x, max=y) |
 
 *using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "false" but object value in fact is not boolean `false`.
-
-**currently support for checking if floating point value is positive/negative is limited to values that include zero. `@DecimalMin` and `@DecimalMax` may be used as hacky fallback (`0.000..001`).
 
 ### Additional
 | Annotation | Description |
