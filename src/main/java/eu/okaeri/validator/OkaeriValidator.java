@@ -431,7 +431,7 @@ public class OkaeriValidator implements Validator {
 
         BigDecimal objectValue;
         if (fieldValue instanceof Duration) {
-            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toNanos());
         } else {
             objectValue = this.toBigDecimal(fieldValue, fieldType);
             if (objectValue == null) {
@@ -462,7 +462,7 @@ public class OkaeriValidator implements Validator {
 
         BigDecimal objectValue;
         if (fieldValue instanceof Duration) {
-            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toNanos());
         } else {
             objectValue = this.toBigDecimal(fieldValue, fieldType);
             if (objectValue == null) {
@@ -493,7 +493,7 @@ public class OkaeriValidator implements Validator {
 
         BigDecimal objectValue;
         if (fieldValue instanceof Duration) {
-            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toNanos());
         } else {
             objectValue = this.toBigDecimal(fieldValue, fieldType);
             if (objectValue == null) {
@@ -524,7 +524,7 @@ public class OkaeriValidator implements Validator {
 
         BigDecimal objectValue;
         if (fieldValue instanceof Duration) {
-            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toMillis());
+            objectValue = BigDecimal.valueOf(((Duration) fieldValue).toNanos());
         } else {
             objectValue = this.toBigDecimal(fieldValue, fieldType);
             if (objectValue == null) {
