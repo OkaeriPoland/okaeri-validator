@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  *
  * `null` elements are considered valid.
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Size {
     int min() default 0;

@@ -9,7 +9,7 @@ import java.util.Set;
 public final class TestValidator {
 
     public static void main(String[] args) {
-        OkaeriValidator validator = OkaeriValidator.of(Bean.class, NullPolicy.NOT_NULL);
+        OkaeriValidator validator = OkaeriValidator.of(NullPolicy.NOT_NULL);
         Set<ConstraintViolation> violations = validator.validate(new Bean());
         violations.forEach(violation -> System.out.println(violation.getField() + ": " + violation.getMessage()));
     }
