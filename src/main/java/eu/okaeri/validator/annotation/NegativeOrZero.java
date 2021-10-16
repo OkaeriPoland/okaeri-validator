@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  *
  * `null` elements are considered valid.
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NegativeOrZero {
     String message() default "value must be negative or zero";

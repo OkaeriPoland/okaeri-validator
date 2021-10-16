@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * Supported types:
  * - CharSequence
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotBlank {
     String message() default "value cannot be blank";

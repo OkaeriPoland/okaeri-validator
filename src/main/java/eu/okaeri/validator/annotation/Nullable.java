@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * The annotated element is allowed to be null (used with {@link NullPolicy#NOT_NULL}). Accepts any type.
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Nullable {
 }
