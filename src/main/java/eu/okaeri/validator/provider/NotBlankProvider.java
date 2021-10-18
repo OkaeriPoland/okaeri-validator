@@ -2,6 +2,8 @@ package eu.okaeri.validator.provider;
 
 import eu.okaeri.validator.ConstraintViolation;
 import eu.okaeri.validator.annotation.NotBlank;
+import eu.okaeri.validator.annotation.NotNull;
+import eu.okaeri.validator.annotation.Nullable;
 import eu.okaeri.validator.exception.ValidatorException;
 
 import java.lang.reflect.Type;
@@ -17,7 +19,7 @@ public class NotBlankProvider implements ValidationProvider<NotBlank> {
     }
 
     @Override
-    public Set<ConstraintViolation> validate(NotBlank annotation, Object annotationSource, Object value, Class<?> type, Type genericType, String name) {
+    public Set<ConstraintViolation> validate(@NotNull NotBlank annotation, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name) {
 
         type = this.extractType(type, genericType);
         value = this.extractValue(value, type, genericType);

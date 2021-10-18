@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * The annotated element must not be null and must contain at least one non-whitespace character.
- *
+ * <p>
  * Supported types:
  * - CharSequence
  */
