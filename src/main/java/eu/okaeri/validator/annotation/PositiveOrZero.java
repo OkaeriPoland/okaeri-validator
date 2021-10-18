@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * The annotated element must be a positive number or 0.
- *
+ * <p>
  * Supported types:
  * - BigDecimal
  * - BigInteger
@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
  * - primitives: byte, short, int, long, double*, float*
  * - Number: (eg. Byte, Short, Integer, Long, Double*, Float*)
  * - Duration
- *
+ * <p>
  * *Floating point values may be prone to the rounding errors.
- *
+ * <p>
  * `null` elements are considered valid.
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER})

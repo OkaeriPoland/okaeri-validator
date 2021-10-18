@@ -28,7 +28,7 @@ public class NotNullProvider implements ValidationProvider<NotNull> {
     }
 
     @Override
-    public Set<ConstraintViolation> validate(NotNull notNull, Object annotationSource, Object value, Class<?> type, Type genericType, String name) {
+    public Set<ConstraintViolation> validate(@NotNull NotNull notNull, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name) {
 
         Boolean canBeNull = null;
         Nullable nullable = this.extractAnnotation(annotationSource, Nullable.class);

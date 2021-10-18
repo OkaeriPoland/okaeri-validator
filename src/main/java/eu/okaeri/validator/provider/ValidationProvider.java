@@ -1,6 +1,8 @@
 package eu.okaeri.validator.provider;
 
 import eu.okaeri.validator.ConstraintViolation;
+import eu.okaeri.validator.annotation.NotNull;
+import eu.okaeri.validator.annotation.Nullable;
 import eu.okaeri.validator.exception.ValidatorException;
 
 import java.lang.annotation.Annotation;
@@ -20,23 +22,23 @@ public interface ValidationProvider<T extends Annotation> {
 
     Class<T> getAnnotation();
 
-    default boolean shouldValidate(Object target) {
+    default boolean shouldValidate(@Nullable Object target) {
         return this.extractAnnotation(target, this.getAnnotation()) != null;
     }
 
-    Set<ConstraintViolation> validate(T annotation, Object annotationSource, Object value, Class<?> type, Type genericType, String name);
+    Set<ConstraintViolation> validate(@NotNull T annotation, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name);
 
-    default Set<ConstraintViolation> validate(Field field, Object value) {
+    default Set<ConstraintViolation> validate(@NotNull Field field, @Nullable Object value) {
         T annotation = field.getAnnotation(this.getAnnotation());
         return (annotation == null) ? Collections.emptySet() : this.validate(annotation, field, value, field.getType(), field.getGenericType(), field.getName());
     }
 
-    default Set<ConstraintViolation> validate(Parameter parameter, Object value) {
+    default Set<ConstraintViolation> validate(@NotNull Parameter parameter, @Nullable Object value) {
         T annotation = parameter.getAnnotation(this.getAnnotation());
         return (annotation == null) ? Collections.emptySet() : this.validate(annotation, parameter, value, parameter.getType(), parameter.getParameterizedType(), parameter.getName());
     }
 
-    default BigDecimal toBigDecimal(Object value, Class<?> type, Type genericType) {
+    default BigDecimal toBigDecimal(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
 
         if (value == null) {
             return null;
@@ -76,12 +78,12 @@ public interface ValidationProvider<T extends Annotation> {
         return null;
     }
 
-    default boolean isNullOrEmpty(Object value, Class<?> type, Type genericType) {
+    default boolean isNullOrEmpty(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
         return this.extractValue(value, type, genericType) == null;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    default Object extractValue(Object value, Class<?> type, Type genericType) {
+    default Object extractValue(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
 
         // just null
         if (value == null) {
@@ -97,7 +99,7 @@ public interface ValidationProvider<T extends Annotation> {
         return value;
     }
 
-    default Class<?> extractType(Class<?> type, Type genericType) {
+    default Class<?> extractType(@NotNull Class<?> type, @NotNull Type genericType) {
 
         if (genericType instanceof ParameterizedType) {
 
@@ -112,7 +114,7 @@ public interface ValidationProvider<T extends Annotation> {
         return type;
     }
 
-    default <A extends Annotation> A extractAnnotation(Object annotationSource, Class<A> type) {
+    default <A extends Annotation> A extractAnnotation(@Nullable Object annotationSource, @NotNull Class<A> type) {
         if (annotationSource instanceof Field) {
             return ((Field) annotationSource).getAnnotation(type);
         } else if (annotationSource instanceof Parameter) {
@@ -122,13 +124,13 @@ public interface ValidationProvider<T extends Annotation> {
         }
     }
 
-    default Set<ConstraintViolation> compareBigDecimal(Object value,
-                                                       String name,
-                                                       Class<?> type,
-                                                       Type genericType,
-                                                       Object annotationValue,
-                                                       String annotationMessage,
-                                                       Predicate<Integer> predicate) {
+    default Set<ConstraintViolation> compareBigDecimal(@Nullable Object value,
+                                                       @NotNull String name,
+                                                       @NotNull Class<?> type,
+                                                       @NotNull Type genericType,
+                                                       @NotNull Object annotationValue,
+                                                       @NotNull String annotationMessage,
+                                                       @NotNull Predicate<Integer> predicate) {
 
         if (this.isNullOrEmpty(value, type, genericType)) {
             return Collections.emptySet();
