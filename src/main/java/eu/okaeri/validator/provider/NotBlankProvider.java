@@ -26,7 +26,7 @@ public class NotBlankProvider implements ValidationProvider<NotBlank> {
 
         if (value == null) {
             Set<ConstraintViolation> violations = new LinkedHashSet<>();
-            violations.add(new ConstraintViolation(name, annotation.message()));
+            violations.add(new ConstraintViolation(name, annotation.message(), this.getType()));
             return violations;
         }
 
@@ -44,7 +44,7 @@ public class NotBlankProvider implements ValidationProvider<NotBlank> {
         }
 
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
-        violations.add(new ConstraintViolation(name, annotation.message()));
+        violations.add(new ConstraintViolation(name, annotation.message(), this.getType()));
         return violations;
     }
 }

@@ -7,4 +7,5 @@ import lombok.*;
 public class ConstraintViolation {
     private String field;
     private String message;
+    private String type;
 }

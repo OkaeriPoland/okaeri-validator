@@ -67,7 +67,7 @@ public class NotNullProvider implements ValidationProvider<NotNull> {
                 : "value cannot be null";
 
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
-        violations.add(new ConstraintViolation(name, message));
+        violations.add(new ConstraintViolation(name, message, this.getType()));
 
         return violations;
     }

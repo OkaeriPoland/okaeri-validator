@@ -55,7 +55,7 @@ public class SizeProvider implements ValidationProvider<Size> {
                 .replace("{max}", String.valueOf(max));
 
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
-        violations.add(new ConstraintViolation(name, message));
+        violations.add(new ConstraintViolation(name, message, this.getType()));
 
         return violations;
     }

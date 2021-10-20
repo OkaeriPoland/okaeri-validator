@@ -22,6 +22,10 @@ public interface ValidationProvider<T extends Annotation> {
 
     Class<T> getAnnotation();
 
+    default String getType() {
+        return this.getAnnotation().getSimpleName();
+    }
+
     default boolean shouldValidate(@Nullable Object target) {
         return this.extractAnnotation(target, this.getAnnotation()) != null;
     }
@@ -152,7 +156,7 @@ public interface ValidationProvider<T extends Annotation> {
 
         String message = annotationMessage.replace("{value}", String.valueOf(decimal));
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
-        violations.add(new ConstraintViolation(name, message));
+        violations.add(new ConstraintViolation(name, message, this.getType()));
 
         return violations;
     }
