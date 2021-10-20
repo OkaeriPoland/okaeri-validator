@@ -48,7 +48,7 @@ public class PatternProvider implements ValidationProvider<Pattern> {
 
         String message = annotation.message().replace("{value}", patternStr);
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
-        violations.add(new ConstraintViolation(name, message));
+        violations.add(new ConstraintViolation(name, message, this.getType()));
 
         return violations;
     }
