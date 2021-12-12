@@ -51,8 +51,8 @@ public class SizeProvider implements ValidationProvider<Size> {
         }
 
         String message = annotation.message()
-                .replace("{min}", String.valueOf(min))
-                .replace("{max}", String.valueOf(max));
+            .replace("{min}", String.valueOf(min))
+            .replace("{max}", String.valueOf(max));
 
         Set<ConstraintViolation> violations = new LinkedHashSet<>();
         violations.add(new ConstraintViolation(name, message, this.getType()));

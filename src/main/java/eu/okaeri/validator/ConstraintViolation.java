@@ -1,6 +1,7 @@
 package eu.okaeri.validator;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor

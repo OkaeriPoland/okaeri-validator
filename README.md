@@ -11,28 +11,40 @@ The library is partially complaint but not expected to be. The main goal is rela
 to using hibernate-validator with Jakarta EE which ends at 2MB of additional jar size.
 
 ## Installation
+
 ### Maven
+
 Add repository to the `repositories` section:
+
 ```xml
+
 <repository>
     <id>okaeri-repo</id>
     <url>https://storehouse.okaeri.eu/repository/maven-public/</url>
 </repository>
 ```
+
 Add dependency to the `dependencies` section:
+
 ```xml
+
 <dependency>
-  <groupId>eu.okaeri</groupId>
-  <artifactId>okaeri-validator</artifactId>
-  <version>1.3.1</version>
+    <groupId>eu.okaeri</groupId>
+    <artifactId>okaeri-validator</artifactId>
+    <version>1.3.1</version>
 </dependency>
 ```
+
 ### Gradle
+
 Add repository to the `repositories` section:
+
 ```groovy
 maven { url "https://storehouse.okaeri.eu/repository/maven-public/" }
 ```
+
 Add dependency to the `maven` section:
+
 ```groovy
 implementation 'eu.okaeri:okaeri-validator:1.3.1'
 ```
@@ -91,6 +103,7 @@ public final class TestValidator {
 ## Annotations
 
 ### Comparison
+
 | Jakarta EE | Okaeri Validator |
 |-|-|
 | @AssertFalse | @Pattern(value = "false", useToString=true)* |
@@ -118,6 +131,7 @@ public final class TestValidator {
 *using `useToString=true` may yield unexpected results, eg. `CustomObject#toString()` may return "false" but object value in fact is not boolean `false`.
 
 ### Additional
+
 | Annotation | Description |
 |-|-|
 | @Nullable | Allows value to be null when `NullPolicy.NOT_NULL` is used |
