@@ -20,14 +20,6 @@ public class OkaeriValidator implements Validator {
     private final NullPolicy nullPolicy;
     private final Map<Class<? extends Annotation>, ValidationProvider<?>> validationProviders = new ConcurrentHashMap<>();
 
-    public static OkaeriValidator of() {
-        return of(NullPolicy.NULLABLE);
-    }
-
-    public static OkaeriValidator of(NullPolicy nullPolicy) {
-        return new OkaeriValidator(nullPolicy);
-    }
-
     protected OkaeriValidator(NullPolicy nullPolicy) {
         this.nullPolicy = nullPolicy;
         this.register(new DecimalMaxProvider());
@@ -44,6 +36,14 @@ public class OkaeriValidator implements Validator {
         this.register(new SizeProvider());
     }
 
+    public static OkaeriValidator of() {
+        return of(NullPolicy.NULLABLE);
+    }
+
+    public static OkaeriValidator of(NullPolicy nullPolicy) {
+        return new OkaeriValidator(nullPolicy);
+    }
+
     @Override
     public <T extends Annotation> OkaeriValidator register(@NonNull ValidationProvider<T> validationProvider) {
         this.validationProviders.put(validationProvider.getAnnotation(), validationProvider);
@@ -53,8 +53,8 @@ public class OkaeriValidator implements Validator {
     @Override
     public Set<ConstraintViolation> validate(@NonNull Object object) {
         return Arrays.stream(object.getClass().getFields())
-                .flatMap(field -> this.validatePropertyValue(object.getClass(), field.getName(), this.fieldValueOrNull(object, field)).stream())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+            .flatMap(field -> this.validatePropertyValue(object.getClass(), field.getName(), this.fieldValueOrNull(object, field)).stream())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
