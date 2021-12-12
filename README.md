@@ -17,7 +17,6 @@ to using hibernate-validator with Jakarta EE which ends at 2MB of additional jar
 Add repository to the `repositories` section:
 
 ```xml
-
 <repository>
     <id>okaeri-repo</id>
     <url>https://storehouse.okaeri.eu/repository/maven-public/</url>
@@ -27,7 +26,6 @@ Add repository to the `repositories` section:
 Add dependency to the `dependencies` section:
 
 ```xml
-
 <dependency>
     <groupId>eu.okaeri</groupId>
     <artifactId>okaeri-validator</artifactId>
