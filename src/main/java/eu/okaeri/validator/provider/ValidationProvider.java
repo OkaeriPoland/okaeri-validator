@@ -12,6 +12,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -77,6 +79,10 @@ public interface ValidationProvider<T extends Annotation> {
 
         if (Number.class.isAssignableFrom(type)) {
             return BigDecimal.valueOf(((Number) value).longValue());
+        }
+
+        if (Duration.class.isAssignableFrom(type)) {
+            return BigDecimal.valueOf(((Duration) value).get(ChronoUnit.NANOS));
         }
 
         return null;

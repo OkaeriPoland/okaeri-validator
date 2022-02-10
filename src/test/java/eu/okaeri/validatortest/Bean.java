@@ -2,6 +2,7 @@ package eu.okaeri.validatortest;
 
 import eu.okaeri.validator.annotation.*;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,4 +44,7 @@ public class Bean {
 
     @DecimalMin("5.99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999")
     private int six = 6;
+
+    @Negative
+    private Duration duration = Duration.ZERO;
 }
