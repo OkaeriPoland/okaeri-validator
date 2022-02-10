@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -82,7 +81,7 @@ public interface ValidationProvider<T extends Annotation> {
         }
 
         if (Duration.class.isAssignableFrom(type)) {
-            return BigDecimal.valueOf(((Duration) value).get(ChronoUnit.NANOS));
+            return BigDecimal.valueOf(((Duration) value).toNanos());
         }
 
         return null;

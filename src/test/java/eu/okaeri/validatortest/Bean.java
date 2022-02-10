@@ -47,4 +47,10 @@ public class Bean {
 
     @Negative
     private Duration duration = Duration.ZERO;
+
+    @Positive
+    private Duration positiveDuration = Duration.ofSeconds(5);
+
+    @Positive
+    private int positiveInt = 1;
 }
