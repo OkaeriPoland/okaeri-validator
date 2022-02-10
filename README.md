@@ -7,7 +7,7 @@
 [![Discord](https://img.shields.io/discord/589089838200913930)](https://discord.gg/hASN5eX)
 
 Simple Java Bean field validator inspired by Java EE validation practices. 
-The library is partially complaint but not expected to be. The main goal is relatively small source code size (~20kB) as opposed 
+The library is partially complaint but not expected to be. The main goal is relatively small source code size (~40kB) as opposed 
 to using hibernate-validator with Jakarta EE which ends at 2MB of additional jar size.
 
 ## Installation
