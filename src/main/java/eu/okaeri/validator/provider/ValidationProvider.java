@@ -34,13 +34,15 @@ public interface ValidationProvider<T extends Annotation> {
     Set<ConstraintViolation> validate(@NotNull T annotation, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name);
 
     default Set<ConstraintViolation> validate(@NotNull Field field, @Nullable Object value) {
-        T annotation = field.getAnnotation(this.getAnnotation());
-        return (annotation == null) ? Collections.emptySet() : this.validate(annotation, field, value, field.getType(), field.getGenericType(), field.getName());
+        return this.shouldValidate(field)
+            ? this.validate(field.getAnnotation(this.getAnnotation()), field, value, field.getType(), field.getGenericType(), field.getName())
+            : Collections.emptySet();
     }
 
     default Set<ConstraintViolation> validate(@NotNull Parameter parameter, @Nullable Object value) {
-        T annotation = parameter.getAnnotation(this.getAnnotation());
-        return (annotation == null) ? Collections.emptySet() : this.validate(annotation, parameter, value, parameter.getType(), parameter.getParameterizedType(), parameter.getName());
+        return this.shouldValidate(parameter)
+            ? this.validate(parameter.getAnnotation(this.getAnnotation()), parameter, value, parameter.getType(), parameter.getParameterizedType(), parameter.getName())
+            : Collections.emptySet();
     }
 
     default BigDecimal toBigDecimal(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
