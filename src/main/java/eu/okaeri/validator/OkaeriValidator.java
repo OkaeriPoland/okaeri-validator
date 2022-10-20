@@ -92,7 +92,7 @@ public class OkaeriValidator implements Validator {
     }
 
     @Override
-    public Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, @NonNull Object value) {
+    public Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, Object value) {
         return this.validationProviders.values().stream()
             .filter(provider -> provider.shouldValidate(parameter))
             .flatMap(provider -> provider.validate(parameter, value).stream())
