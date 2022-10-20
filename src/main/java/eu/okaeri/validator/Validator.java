@@ -24,5 +24,5 @@ public interface Validator {
 
     Set<ConstraintViolation> validateParameters(@NonNull Parameter[] parameters, @NonNull Object[] values);
 
-    Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, @NonNull Object value);
+    Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, Object value);
 }
