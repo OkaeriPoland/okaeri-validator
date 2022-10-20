@@ -149,12 +149,12 @@ public interface ValidationProvider<T extends Annotation> {
 
         BigDecimal objectValue = this.toBigDecimal(value, type, genericType);
         if (objectValue == null) {
-            throw new ValidatorException("@DecimalMin is not applicable for " + type + " [" + name + "]");
+            throw new ValidatorException("@" + this.getAnnotation().getSimpleName() + " is not applicable for " + type + " [" + name + "]");
         }
 
         BigDecimal decimal = this.toBigDecimal(annotationValue, annotationValue.getClass(), null);
         if (decimal == null) {
-            throw new ValidatorException("@" + this.getClass().getSimpleName() + " value '" + annotationValue + "' is invalid [" + name + "]");
+            throw new ValidatorException("@" + this.getAnnotation().getSimpleName() + " value '" + annotationValue + "' is invalid [" + name + "]");
         }
 
         if (predicate.test(objectValue.compareTo(decimal))) {
