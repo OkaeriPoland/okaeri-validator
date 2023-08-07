@@ -6,6 +6,7 @@ import eu.okaeri.validator.annotation.Nullable;
 import eu.okaeri.validator.exception.ValidatorException;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -33,16 +34,18 @@ public interface ValidationProvider<T extends Annotation> {
 
     Set<ConstraintViolation> validate(@NotNull T annotation, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name);
 
-    default Set<ConstraintViolation> validate(@NotNull Field field, @Nullable Object value) {
-        return this.shouldValidate(field)
-            ? this.validate(field.getAnnotation(this.getAnnotation()), field, value, field.getType(), field.getGenericType(), field.getName())
+    default Set<ConstraintViolation> validate(@NotNull AnnotatedElement element, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name) {
+        return this.shouldValidate(element)
+            ? this.validate(element.getAnnotation(this.getAnnotation()), element, value, type, genericType, name)
             : Collections.emptySet();
     }
 
+    default Set<ConstraintViolation> validate(@NotNull Field field, @Nullable Object value) {
+        return this.validate(field, value, field.getType(), field.getGenericType(), field.getName());
+    }
+
     default Set<ConstraintViolation> validate(@NotNull Parameter parameter, @Nullable Object value) {
-        return this.shouldValidate(parameter)
-            ? this.validate(parameter.getAnnotation(this.getAnnotation()), parameter, value, parameter.getType(), parameter.getParameterizedType(), parameter.getName())
-            : Collections.emptySet();
+        return this.validate(parameter, value, parameter.getType(), parameter.getParameterizedType(), parameter.getName());
     }
 
     default BigDecimal toBigDecimal(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
@@ -130,6 +133,8 @@ public interface ValidationProvider<T extends Annotation> {
             return ((Field) annotationSource).getAnnotation(type);
         } else if (annotationSource instanceof Parameter) {
             return ((Parameter) annotationSource).getAnnotation(type);
+        } else if (annotationSource instanceof AnnotatedElement) {
+            return ((AnnotatedElement) annotationSource).getAnnotation(type);
         } else {
             throw new ValidatorException("Unknown annotation source: " + annotationSource);
         }
@@ -167,4 +172,5 @@ public interface ValidationProvider<T extends Annotation> {
 
         return violations;
     }
+
 }

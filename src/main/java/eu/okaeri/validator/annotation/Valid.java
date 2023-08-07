@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must not be null. Accepts any type.
+ * Marks that nested class should be validated based on rules defined in that class.
  */
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NotNull {
-    String message() default "value cannot be null";
+public @interface Valid {
+
 }
