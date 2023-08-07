@@ -76,8 +76,7 @@ public class Bean {
         @Size(min = 10)
         private List<@PositiveOrZero Integer> allNegativeAndTooShortList = Arrays.asList(-1, -2, -3);
 
-        @Valid
-        private InnerInnerBean innerInnerBean = new InnerInnerBean();
+        private Map<String, @Valid InnerInnerBean> innerMap = Collections.singletonMap("test", new InnerInnerBean());
 
         private static class InnerInnerBean {
 

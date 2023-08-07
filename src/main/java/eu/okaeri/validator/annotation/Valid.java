@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Marks that nested class should be validated based on rules defined in that class.
  */
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Valid {
 
