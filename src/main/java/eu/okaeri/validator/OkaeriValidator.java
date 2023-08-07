@@ -5,6 +5,7 @@ import eu.okaeri.validator.policy.NullPolicy;
 import eu.okaeri.validator.provider.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
@@ -86,7 +87,7 @@ public class OkaeriValidator implements Validator {
             .filter(provider -> provider.shouldValidate(field))
             .flatMap(provider -> provider.validate(field, fieldValue).stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
-        violations.addAll(this.validate(field.getName(), field.getAnnotatedType(), fieldValue));
+        violations.addAll(this.validateCascading(field.getName(), field.getAnnotatedType(), fieldValue));
         return violations;
     }
 
@@ -105,11 +106,11 @@ public class OkaeriValidator implements Validator {
             .filter(provider -> provider.shouldValidate(parameter))
             .flatMap(provider -> provider.validate(parameter, value).stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
-        violations.addAll(this.validate(parameter.getName(), parameter.getAnnotatedType(), value));
+        violations.addAll(this.validateCascading(parameter.getName(), parameter.getAnnotatedType(), value));
         return violations;
     }
 
-    private Set<ConstraintViolation> validate(@NonNull String fieldName, @NonNull AnnotatedType annotatedObjectType, Object object) {
+    private Set<ConstraintViolation> validateCascading(@NonNull String fieldName, @NonNull AnnotatedType annotatedObjectType, Object object) {
         if (!(annotatedObjectType instanceof AnnotatedParameterizedType)) {
             return new LinkedHashSet<>();
         }
@@ -139,7 +140,7 @@ public class OkaeriValidator implements Validator {
         AtomicInteger index = new AtomicInteger(0);
         return collection.stream()
             .flatMap(element -> this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, element).stream()
-                .peek(elementViolation -> elementViolation.setField(fieldName + " [element index " + index.getAndIncrement() + "]")))
+                .peek(elementViolation -> elementViolation.setPath("[" + index.getAndIncrement() + "]")))
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -152,21 +153,12 @@ public class OkaeriValidator implements Validator {
         }
 
         return map.entrySet().stream()
-            .flatMap(entry -> {
-                Set<ConstraintViolation> entryViolations = new LinkedHashSet<>();
-
-                Object key = entry.getKey();
-                entryViolations.addAll(this.validateElement(fieldName, (Class<?>) keyType, annotatedKeyType, key).stream()
-                    .peek(elementViolation -> elementViolation.setField(fieldName + " [key " + key + "]"))
-                    .collect(Collectors.toCollection(LinkedHashSet::new)));
-
-                Object value = entry.getValue();
-                entryViolations.addAll(this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, value).stream()
-                    .peek(elementViolation -> elementViolation.setField(fieldName + " [with key " + key + "]"))
-                    .collect(Collectors.toCollection(LinkedHashSet::new)));
-
-                return entryViolations.stream();
-            })
+            .flatMap(entry -> Stream.concat(
+                this.validateElement(fieldName, (Class<?>) keyType, annotatedKeyType, entry.getKey()).stream()
+                    .peek(elementViolation -> elementViolation.setPath("[" + entry.getKey() + "]")),
+                this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, entry.getValue()).stream()
+                    .peek(elementViolation -> elementViolation.setPath("[" + entry.getKey() + "].value"))
+            ))
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

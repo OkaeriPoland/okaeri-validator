@@ -21,9 +21,6 @@ public class ValidProvider implements ValidationProvider<Valid> {
 
     @Override
     public Set<ConstraintViolation> validate(@NotNull Valid annotation, @Nullable Object annotationSource, @Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType, @NotNull String name) {
-        type = this.extractType(type, genericType);
-        value = this.extractValue(value, type, genericType);
-
         return this.validator.validate(value);
     }
 
