@@ -139,8 +139,8 @@ public class OkaeriValidator implements Validator {
 
         AtomicInteger index = new AtomicInteger(0);
         return collection.stream()
-            .flatMap(element -> this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, element).stream()
-                .peek(elementViolation -> elementViolation.setPath("[" + index.getAndIncrement() + "]")))
+            .flatMap(element -> this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, element).stream())
+            .map(violation -> new ConstraintViolation(fieldName, "[" + index.getAndIncrement() + "]", violation.getMessage(), violation.getType()))
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -153,19 +153,34 @@ public class OkaeriValidator implements Validator {
         }
 
         return map.entrySet().stream()
-            .flatMap(entry -> Stream.concat(
-                this.validateElement(fieldName, (Class<?>) keyType, annotatedKeyType, entry.getKey()).stream()
-                    .peek(elementViolation -> elementViolation.setPath("[" + entry.getKey() + "]")),
-                this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, entry.getValue()).stream()
-                    .peek(elementViolation -> elementViolation.setPath("[" + entry.getKey() + "].value"))
-            ))
+            .flatMap(entry ->
+                Stream.concat(
+                    this.validateElement(fieldName, (Class<?>) keyType, annotatedKeyType, entry.getKey()).stream().map(violation -> {
+                        String element = "[*" + entry.getKey() + "]";
+                        if (violation.isCascading()) {
+                            violation.getPath().appendPathRoot(new ViolationPath(fieldName, element));
+                            return violation;
+                        }
+                        return new ConstraintViolation(fieldName, element, violation.getMessage(), violation.getType());
+                    }),
+                    this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, entry.getValue()).stream().map(violation -> {
+                        String element = "[" + entry.getKey() + "]";
+                        if (violation.isCascading()) {
+                            violation.getPath().appendPathRoot(new ViolationPath(fieldName, element));
+                            return violation;
+                        }
+                        return new ConstraintViolation(fieldName, element, violation.getMessage(), violation.getType());
+                    })
+                )
+            )
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Set<ConstraintViolation> validateElement(@NonNull String fieldName, @NonNull Class<?> type, @NonNull AnnotatedType annotatedType, @NonNull Object element) {
+    private Set<ConstraintViolation> validateElement(@NonNull String elementName, @NonNull Class<?> type, @NonNull AnnotatedType annotatedType, Object element) {
         return this.validationProviders.values().stream()
             .filter(provider -> provider.shouldValidate(annotatedType))
-            .flatMap(provider -> provider.validate(annotatedType, element, type, type, fieldName).stream())
+            .flatMap(provider -> provider.validate(annotatedType, element, type, type, elementName).stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
+
 }
