@@ -1,6 +1,9 @@
 package eu.okaeri.validator;
 
 import eu.okaeri.validator.provider.ValidationProvider;
+import java.lang.reflect.AnnotatedType;
+import java.util.Collection;
+import java.util.Map;
 import lombok.NonNull;
 
 import java.lang.annotation.Annotation;
@@ -25,4 +28,8 @@ public interface Validator {
     Set<ConstraintViolation> validateParameters(@NonNull Parameter[] parameters, @NonNull Object[] values);
 
     Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, Object value);
+
+    Set<ConstraintViolation> validateCollection(@NonNull String fieldName, @NonNull AnnotatedType annotatedValueType, @NonNull Collection<?> collection);
+
+    Set<ConstraintViolation> validateMap(@NonNull String fieldName, @NonNull AnnotatedType annotatedKeyType, @NonNull AnnotatedType annotatedValueType, @NonNull Map<?, ?> map);
 }

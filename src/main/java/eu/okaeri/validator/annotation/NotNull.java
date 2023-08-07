@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * The annotated element must not be null. Accepts any type.
  */
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotNull {
     String message() default "value cannot be null";

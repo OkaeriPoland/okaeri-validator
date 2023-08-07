@@ -3,14 +3,20 @@ package eu.okaeri.validator;
 
 import eu.okaeri.validator.policy.NullPolicy;
 import eu.okaeri.validator.provider.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,6 +37,7 @@ public class OkaeriValidator implements Validator {
         this.register(new PositiveOrZeroProvider());
         this.register(new PositiveProvider());
         this.register(new SizeProvider());
+        this.register(new ValidProvider(this));
     }
 
     public static OkaeriValidator of() {
@@ -76,10 +83,12 @@ public class OkaeriValidator implements Validator {
 
     @Override
     public Set<ConstraintViolation> validatePropertyValue(@NonNull Class<?> type, @NonNull Field field, Object fieldValue) {
-        return this.validationProviders.values().stream()
+        Set<ConstraintViolation> violations = this.validationProviders.values().stream()
             .filter(provider -> provider.shouldValidate(field))
             .flatMap(provider -> provider.validate(field, fieldValue).stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
+        violations.addAll(this.validateCascading(field.getName(), field.getAnnotatedType(), fieldValue));
+        return violations;
     }
 
     @Override
@@ -93,9 +102,85 @@ public class OkaeriValidator implements Validator {
 
     @Override
     public Set<ConstraintViolation> validateParameter(@NonNull Parameter parameter, Object value) {
-        return this.validationProviders.values().stream()
+        Set<ConstraintViolation> violations = this.validationProviders.values().stream()
             .filter(provider -> provider.shouldValidate(parameter))
             .flatMap(provider -> provider.validate(parameter, value).stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
+        violations.addAll(this.validateCascading(parameter.getName(), parameter.getAnnotatedType(), value));
+        return violations;
     }
+
+    private Set<ConstraintViolation> validateCascading(@NonNull String fieldName, @NonNull AnnotatedType annotatedObjectType, Object object) {
+        if (!(annotatedObjectType instanceof AnnotatedParameterizedType)) {
+            return new LinkedHashSet<>();
+        }
+        AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType) annotatedObjectType;
+
+        if (!(parameterizedType.getType() instanceof ParameterizedType)) {
+            return new LinkedHashSet<>();
+        }
+        Class<?> objectType = (Class<?>) ((ParameterizedType) parameterizedType.getType()).getRawType();
+
+        AnnotatedType[] actualTypes = parameterizedType.getAnnotatedActualTypeArguments();
+        if (Collection.class.isAssignableFrom(objectType)) {
+            return this.validateCollection(fieldName, actualTypes[0], (Collection<?>) object);
+        } else if (Map.class.isAssignableFrom(objectType)) {
+            return this.validateMap(fieldName, actualTypes[0], actualTypes[1], (Map<?, ?>) object);
+        }
+        return new LinkedHashSet<>();
+    }
+
+    @Override
+    public Set<ConstraintViolation> validateCollection(@NonNull String fieldName, @NonNull AnnotatedType annotatedValueType, @NonNull Collection<?> collection) {
+        Type valueType = annotatedValueType.getType();
+        if (!(valueType instanceof Class<?>)) {
+            return new LinkedHashSet<>();
+        }
+
+        AtomicInteger index = new AtomicInteger(0);
+        return collection.stream()
+            .flatMap(element -> this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, element).stream())
+            .map(violation -> new ConstraintViolation(fieldName, "[" + index.getAndIncrement() + "]", violation.getMessage(), violation.getType()))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Override
+    public Set<ConstraintViolation> validateMap(@NonNull String fieldName, @NonNull AnnotatedType annotatedKeyType, @NonNull AnnotatedType annotatedValueType, @NonNull Map<?, ?> map) {
+        Type keyType = annotatedKeyType.getType();
+        Type valueType = annotatedValueType.getType();
+        if (!(keyType instanceof Class<?>) || !(valueType instanceof Class<?>)) {
+            return new LinkedHashSet<>();
+        }
+
+        return map.entrySet().stream()
+            .flatMap(entry ->
+                Stream.concat(
+                    this.validateElement(fieldName, (Class<?>) keyType, annotatedKeyType, entry.getKey()).stream().map(violation -> {
+                        String element = "[*" + entry.getKey() + "]";
+                        if (violation.isCascading()) {
+                            violation.getPath().appendPathRoot(new ViolationPath(fieldName, element));
+                            return violation;
+                        }
+                        return new ConstraintViolation(fieldName, element, violation.getMessage(), violation.getType());
+                    }),
+                    this.validateElement(fieldName, (Class<?>) valueType, annotatedValueType, entry.getValue()).stream().map(violation -> {
+                        String element = "[" + entry.getKey() + "]";
+                        if (violation.isCascading()) {
+                            violation.getPath().appendPathRoot(new ViolationPath(fieldName, element));
+                            return violation;
+                        }
+                        return new ConstraintViolation(fieldName, element, violation.getMessage(), violation.getType());
+                    })
+                )
+            )
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<ConstraintViolation> validateElement(@NonNull String elementName, @NonNull Class<?> type, @NonNull AnnotatedType annotatedType, Object element) {
+        return this.validationProviders.values().stream()
+            .filter(provider -> provider.shouldValidate(annotatedType))
+            .flatMap(provider -> provider.validate(annotatedType, element, type, type, elementName).stream())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
 }
