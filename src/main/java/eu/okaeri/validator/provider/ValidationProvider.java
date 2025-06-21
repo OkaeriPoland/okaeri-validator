@@ -93,7 +93,7 @@ public interface ValidationProvider<T extends Annotation> {
         return this.extractValue(value, type, genericType) == null;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
+    @SuppressWarnings({"SimplifiableIfStatement", "unchecked"})
     default Object extractValue(@Nullable Object value, @NotNull Class<?> type, @NotNull Type genericType) {
 
         // just null
@@ -103,7 +103,7 @@ public interface ValidationProvider<T extends Annotation> {
 
         // check for optional
         if (Optional.class.isAssignableFrom(type)) {
-            return ((Optional) value).get();
+            return ((Optional) value).orElse(null);
         }
 
         // not value
