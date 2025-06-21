@@ -48,6 +48,11 @@ public class OkaeriValidator implements Validator {
     }
 
     @Override
+    public Map<Class<? extends Annotation>, ValidationProvider<?>> getRegisteredProviders() {
+        return Collections.unmodifiableMap(this.validationProviders);
+    }
+
+    @Override
     public Set<ConstraintViolation> validate(@NonNull Object object) {
         return Arrays.stream(object.getClass().getDeclaredFields())
             .flatMap(field -> this.validateProperty(object, field).stream())
